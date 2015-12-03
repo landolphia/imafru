@@ -338,7 +338,8 @@ if (Meteor.isClient) {
 			ratio = Math.min(Math.max(ratio, 0), 1);
 
 			return graphHeight * ratio;
-		}
+		},
+		'display': function () { return (this.amount==0 || this.dayoff==true?"dontdisplay":"");} 
 	});
 
 	Template.futureDay.events({
@@ -394,7 +395,8 @@ if (Meteor.isClient) {
 			} else ratio = 0;
 
 			return graphHeight * ratio; 
-		}
+		},
+		'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
 	});
 }
 

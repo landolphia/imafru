@@ -62,7 +62,7 @@
 <template name="presentDay">
 <div class="day present {{offday}}">
 	<div class="today" style="height: {{height "anti"}}px;">{{weekday}}</div>
-	<div class="amount" style="height: {{height}}px;">{{amount}}</div>
+	<div class="amount {{display}}" style="height: {{height}}px;">{{amount}}</div>
 	<form class="update">
 		<input class="earning" min=0 value=0>
 		<input class="add" type="button" value="set">
