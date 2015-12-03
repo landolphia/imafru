@@ -1,0 +1,79 @@
+<head>
+<meta charset="utf-8">
+<title>imafru</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/imafru.css">
+</head>
+
+<body>
+	{{stats}}
+	<div class="days">
+		{{#each pastDays}}
+		{{> pastDay}}
+		{{/each}}
+		{{#each presentDays}}
+		{{> presentDay}}
+		{{/each}}
+		{{#each futureDays}}
+		{{> futureDay}}
+		{{/each}}
+	</div>
+
+	<div class="week" style="margin-top: 50px;">
+		{{> week}}
+	</div>
+</body>
+
+<template name="week">
+<div class="goal">
+	<form>
+		<input type="number" min=0 value={{goal}}>
+		<input type="button" value="goal">
+	</form>
+</div>
+<div class="weekbar">
+	<div class="{{lefthue}}" style="width: {{left}}%;">
+		<span>{{leftvalue}}</span>
+	</div>
+	<div class="{{righthue}}" style="width: {{right}}%;">
+		<span>{{rightvalue}}</span>
+	</div>
+</div>
+<div class="projection">
+	<p>Projection: ${{projection}}</p>
+</div>
+</template>
+
+<template name="pastDay">
+<div class="day {{offday}} {{performance}}">
+	<input class="toggleedit" type="button" value="e">
+	<div class="weekday" style="height: {{height "anti"}}px;">{{weekday}}</div>
+	<div class="amount {{display}}" style="height: {{height}}px;">{{amount}}</div>
+	<form class="update dontdisplay">
+		<input class="earning" min=0 value=0>
+		<input class="add" type="button" value="set">
+		<input class="set" type="button" value="add">
+	</form>
+</div>
+</template>
+
+<template name="presentDay">
+<div class="day present {{offday}}">
+	<div class="today" style="height: {{height "anti"}}px;">{{weekday}}</div>
+	<div class="amount" style="height: {{height}}px;">{{amount}}</div>
+	<form class="update">
+		<input class="earning" min=0 value=0>
+		<input class="add" type="button" value="set">
+		<input class="set" type="button" value="add">
+	</form>
+</div>
+</template>
+
+<template name="futureDay">
+<div class="day {{offday}}">
+	<div class="futureday" style="height: {{height "anti"}}px;">{{weekday}}</div>
+	<div class="amount {{display}}" style="height: {{height}}px;">{{needed}}</div>
+</div>
+</template>

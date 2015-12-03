@@ -1,0 +1,187 @@
+body{
+	position: absolute;
+	top: 15%;
+	height: 70%;
+	left: 10%;
+	width: 80%;
+	background-color: #F5EDE3;
+	border: solid 8px #104386;
+	border-radius: 35px;
+	padding-top: 50px;
+	min-height: 400px;
+
+	box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
+	-o-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
+	-moz-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
+	-webkit-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
+}
+
+.days{
+  display: flex;
+  height: 200px;
+
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  justify-content: space-around;
+  align-items: center;
+  align-content: center;
+
+  background-color: #E1D4C0;
+}
+
+.day {
+	position: relative;
+	width: 7.5%;
+	max-height: 200px;
+	min-height: 200px;
+	height: 200px;
+	margin: auto;
+	padding: 0;
+	background-color: #6699FF;
+	overflow: hidden;
+}
+
+.weekday {
+	text-align: center;
+}
+
+.futureday {
+	text-align: center;
+}
+
+.amount {
+	background-color: red;
+	color: #FF6600;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	min-height: 40px;
+	left: 0;
+	text-align: center;
+}
+
+.week {
+	display: flex;
+	height: 100px;
+	flex-direction: row;
+	flex-wrap: nowrap;
+
+	justify-content: space-around;
+	align-items: center;
+	align-content: center;
+	background-color: #E1D4C0;
+}
+
+.goal {
+	width: 10%;
+	height: 50%;
+	margin: auto;
+	overflow: hidden;
+	order: 0;
+}
+
+.weekbar {
+	display: flex;
+	width: 80%;
+	height: 50%;
+	margin: auto;
+	order: 1;
+}
+
+.projection {
+	width: 10%;
+	height: 50%;
+	margin: auto;
+	overflow: hidden;
+	order: 2;
+}
+
+.dayoff {
+	opacity: 0.5;
+	font-style: italic;
+}
+
+.present {
+	background-color: #F5EDE3;
+	color: red;
+}
+
+.today {
+	text-align: center;
+	font-weight: 600;
+	font-style: bold;
+}
+
+.goaldoneleft {
+	background-color: #6699FF;
+}
+
+.goaldoneright {
+	background-color: #FF6600;
+}
+
+.goalleftleft {
+	background-color: #6699FF;
+}
+
+.goalleftright{
+	background-color: #104386; 
+}
+
+.aboveaverage {
+	color: #FF6600;
+	background-color: #104386;
+}
+
+.belowaverage {
+	color: #104386;
+	background-color: #6699FF;
+}
+
+.dontdisplay {
+	display: none;
+	visibility: hidden;
+}
+
+.update {
+	position: absolute;
+	display: flex;
+
+	flex-direction: row;
+	flex-wrap: nowrap;
+
+	justify-content: space-between;
+	align-items: center;
+	align-content: center;
+
+	width: 100%;
+	bottom: 0;
+}
+
+.add {
+	width: 35%;
+	padding: 0;
+	margin: auto;
+}
+
+.set {
+	width: 35%;
+	padding: 0;
+	margin: auto;
+}
+
+.earning {
+	width: 30%;
+	padding: 0;
+	margin: auto;
+}
+
+.toggleedit {
+	position: absolute;
+	padding: 0;
+	top: 0px;
+	left: 0px;
+	width: 10px;
+	height: 10px;
+}
