@@ -18,14 +18,19 @@ body{
 
 .days{
   display: flex;
+  display: -webkit-flex;
   height: 200px;
 
   flex-direction: row;
+  -webkit-flex-direction: row;
   flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
 
   justify-content: space-around;
   align-items: center;
+  -webkit-align-items: center;
   align-content: center;
+  -webkit-align-content: center;
 
   background-color: #E1D4C0;
 }
@@ -63,13 +68,18 @@ body{
 
 .week {
 	display: flex;
+	display: -webkit-flex;
 	height: 100px;
 	flex-direction: row;
+	-webkit-flex-direction: row;
 	flex-wrap: nowrap;
+	-webkit-flex-wrap: nowrap;
 
 	justify-content: space-around;
 	align-items: center;
+	-webkit-align-items: center;
 	align-content: center;
+	-webkit-align-content: center;
 	background-color: #E1D4C0;
 }
 
@@ -83,6 +93,7 @@ body{
 
 .weekbar {
 	display: flex;
+	display: -webkit-flex;
 	width: 80%;
 	height: 50%;
 	margin: auto;
@@ -147,13 +158,18 @@ body{
 .update {
 	position: absolute;
 	display: flex;
+	display: -webkit-flex;
 
 	flex-direction: row;
+	-webkit-flex-direction: row;
 	flex-wrap: nowrap;
+	-webkit-flex-wrap: nowrap;
 
 	justify-content: space-between;
 	align-items: center;
+	-webkit-align-items: center;
 	align-content: center;
+	-webkit-align-content: center;
 
 	width: 100%;
 	bottom: 0;
