@@ -24,6 +24,7 @@ if (Meteor.isClient) {
 			//TODO consolidate queries and move to server
 			//the server returns an object like so {max: 5, total: 25, foo: bar}
 			//this functions puts the results in the appropriate session variables
+			//http://paletton.com/#uid=43n0u0kI-D2mTJutrIoJqriLxlf
 			var goal = Session.get("goal");
 			var range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
 			var total = 0;
@@ -58,12 +59,9 @@ if (Meteor.isClient) {
 
 			//Present
 			range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
-
 			var earned = parseFloat(0);
 			Days.find(range).forEach(function (day) {
-				console.log("EARNED++" + earned);
 				if (day.amount && day.amount > 0) earned += parseFloat(day.amount);
-				console.log("EARNED++" + earned);
 			});
 
 			Session.set("earned", earned.toFixed(2));
@@ -85,10 +83,8 @@ if (Meteor.isClient) {
 
 			//Stats
 			var average = "NA";
-			var pastTotal = 0;
 			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false};
-			Days.find(range).forEach( function (day) { pastTotal += day.amount;});
-			if (pastActive != 0) { average = (pastTotal / pastActive).toFixed(2);}
+			if (pastActive != 0) { average = (earned / pastActive).toFixed(2);}
 			Session.set("average", average);
 
 			var projection = "NA";
@@ -215,14 +211,19 @@ if (Meteor.isClient) {
 
 	Template.pastDay.events({
 		'focus .earning': function (e) { e.target.select();},
-		'click .toggleedit' : function (e) {
+		'click .editlock' : function (e) {
 			e.preventDefault();
-			console.log("toggle edit");
 			var target = e.target;
 			var container = target.parentNode;
 			var form  = container.getElementsByClassName('update')[0];
 			form.classList.toggle('dontdisplay');
 
+			var icon = e.target.src.toString().search("lock-unlocked");
+			console.log("edit: + " + e.target.src);
+			console.log("icon: + " + icon);
+			if (icon == -1) e.target.src = e.target.src.replace("lock-locked", "lock-unlocked");
+			else e.target.src = e.target.src.replace("lock-unlocked", "lock-locked");
+			console.log("edit: + " + e.target.src);
 		},
 		'click .weekday' : function (e) {
 			e.preventDefault();
@@ -242,7 +243,8 @@ if (Meteor.isClient) {
 			var container = target.parentNode;
 			var amount = container.getElementsByClassName('earning')[0];
 			Days.update(this._id, { $set: {amount: parseFloat(amount.value).toFixed(2)}});
-		}
+		},
+		'submit .update': function (e) { e.preventDefault();}
 	});
 
 	Template.pastDay.helpers({
@@ -254,9 +256,11 @@ if (Meteor.isClient) {
 			return names[dayofweek];
 		},
 		'performance': function () {
+			var result = "";
 			var average = Session.get("average");
-			if (this.amount > (0.75 * average)) return "aboveaverage ";
-			else return "belowaverage";
+			if (this.amount > (1.2 * average)) result = "aboveaverage ";
+			if (this.amount < (0.6 * average)) result = "belowaverage";
+			return result;
 		},
 		'height': function (a) {
 			var graphHeight = Session.get("graphHeight");
@@ -278,7 +282,7 @@ if (Meteor.isClient) {
 	});
 
 	Template.presentDay.events({
-		'focus .toggleedit': function (e) { e.target.select();},
+		'focus .earning': function (e) { e.target.select();},
 		'click .today' : function (e) {
 			e.preventDefault();
 			Days.update(this._id, {$set : {dayoff : !this.dayoff}});
@@ -343,7 +347,7 @@ if (Meteor.isClient) {
 	});
 
 	Template.futureDay.events({
-		'click .futureday' : function (e) {
+		'click .weekday' : function (e) {
 			e.preventDefault();
 			Days.update(this._id, {$set : {dayoff : !this.dayoff}});
 		},
@@ -360,6 +364,14 @@ if (Meteor.isClient) {
 		'offday': function () { return (this.dayoff?"dayoff":"");},		
 		'needed': function () {
 			var result = Session.get("averageLeftToGoal");
+			return result;
+		},
+		'difficulty': function () {
+			var result = "";
+			var average = Session.get("average");
+			var averagetogoal = Session.get("averageLeftToGoal");
+			if (average > (1.2 * averagetogoal)) result = "easy";
+			if (average < (0.8 * averagetogoal)) result = "hard";
 			return result;
 		},
 		'weekday': function () {

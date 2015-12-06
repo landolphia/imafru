@@ -47,10 +47,10 @@
 </template>
 
 <template name="pastDay">
-<div class="day {{offday}} {{performance}}">
-	<input class="toggleedit" type="button" value="e">
+<div class="day {{offday}}">
+	<img class="editlock" src="/img/lock-locked.svg" alt="open day to adjust earnings">
 	<div class="weekday" style="height: {{height "anti"}}px;">{{weekday}}</div>
-	<div class="amount {{display}}" style="height: {{height}}px;">{{amount}}</div>
+	<div class="amount {{display}} {{performance}}" style="height: {{height}}px;">{{amount}}</div>
 	<form class="update dontdisplay">
 		<input class="earning" min=0 value=0>
 		<input class="add" type="button" value="set">
@@ -73,7 +73,7 @@
 
 <template name="futureDay">
 <div class="day {{offday}}">
-	<div class="futureday" style="height: {{height "anti"}}px;">{{weekday}}</div>
-	<div class="amount {{display}}" style="height: {{height}}px;">{{needed}}</div>
+	<div class="weekday" style="height: {{height "anti"}}px;">{{weekday}}</div>
+	<div class="amount {{display}} {{difficulty}} future" style="height: {{height}}px;">{{needed}}</div>
 </div>
 </template>
