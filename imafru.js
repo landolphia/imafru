@@ -150,8 +150,8 @@ if (Meteor.isClient) {
 		'blur input[type="number"], click input[type="button"], submit form': function (e) {
 			e.preventDefault();
 			var container = e.target.parentNode;
-			var amount = container.getElementsByTagName('input')[0];
-			Session.set("goal", parseInt(amount.value).toFixed(0));
+			var amount = container.getElementsByTagName('input')[0].value;
+			Session.set("goal", parseInt(amount).toFixed(0));
 		}
 	});
 
@@ -160,17 +160,17 @@ if (Meteor.isClient) {
 		'projection': function () { return Session.get("projection");},
 		'leftvalue': function () {
 			var result = "NA";
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			if (goal < total) result = parseInt(goal);
-			else result = parseInt(total);
+			else result = parseFloat(total);
 			return result.toFixed(2);
 
 		},
 		'rightvalue': function () {
 			var result = "NA";
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			if (goal < total) result = parseInt(total - goal);
 			else result = parseInt(goal - total);
 			return result.toFixed(2);
@@ -187,8 +187,8 @@ if (Meteor.isClient) {
 		},
 		'left': function () {
 			var ratio = 0;
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			if (goal < total) ratio = goal / total; 
 			else ratio = total / goal;
 
@@ -198,8 +198,8 @@ if (Meteor.isClient) {
 		},
 		'right': function () {
 			var ratio = 100;
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			if (goal < total) ratio = (total - goal) / total; 
 			else ratio = (goal - total) / goal;
 
@@ -234,15 +234,15 @@ if (Meteor.isClient) {
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.find(this._id).forEach( function(d) { amount += d.amount;});
 			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
 		},
 		'click .add': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
-			var amount = container.getElementsByClassName('earning')[0];
-			Days.update(this._id, { $set: {amount: parseFloat(amount.value).toFixed(2)}});
+			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+			Days.find(this._id).forEach( function(d) { amount += parseFloat(d.amount);});
+			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
 		},
 		'submit .update': function (e) { e.preventDefault();}
 	});
@@ -292,15 +292,15 @@ if (Meteor.isClient) {
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.find(this._id).forEach( function(d) { amount += d.amount;});
 			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
 		},
 		'click .add': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
-			var amount = container.getElementsByClassName('earning')[0];
-			Days.update(this._id, { $set: {amount: parseFloat(amount.value).toFixed(2)}});
+			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+			Days.find(this._id).forEach( function(d) { amount += parseFloat(d.amount);});
+			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
 		},
 		'submit .update': function (e) { e.preventDefault();}
 	});	
