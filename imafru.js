@@ -38,7 +38,7 @@ if (Meteor.isClient) {
 
 			Session.set("max", max);
 			Session.set("total", parseFloat(total).toFixed(2));
-			Session.set("graphHeight", 196);
+			Session.set("graphHeight", 180);
 
 			range = {"date" : {$gte : monday.toDate(), $lte : sunday.toDate()}, "dayoff" : false};
 			var activeDays = 0;
@@ -176,13 +176,13 @@ if (Meteor.isClient) {
 			return result.toFixed(2);
 		},
 		'lefthue': function () {
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			return (goal<total?"goaldoneleft":"goalleftleft");
 		},
 		'righthue': function () {
-			var goal = Session.get("goal");
-			var total = Session.get("total");
+			var goal = parseFloat(Session.get("goal"));
+			var total = parseFloat(Session.get("total"));
 			return (goal<total?"goaldoneright":"goalleftright");
 		},
 		'left': function () {
@@ -394,17 +394,16 @@ if (Meteor.isClient) {
 			var max = Session.get("max");
 			var adjMax = 1.25 * max;
 
-			var goal = Session.get("goal");
+			var goal = parseFloat(Session.get("goal"));
 
 			var ratio;
 			if (activeDaysLeft != 0) {
-				if (a != "anti") {
-					ratio = (((goal - total) / activeDaysLeft) / adjMax);
-				} else {
-					ratio = 1 - (((goal - total) / activeDaysLeft) / adjMax);
-					ratio = Math.min(1, ratio);
-				}
+				if (a != "anti") ratio = (((goal - total) / activeDaysLeft) / adjMax);
+				else ratio = 1 - (((goal - total) / activeDaysLeft) / adjMax);
 			} else ratio = 0;
+
+			ratio = Math.min(Math.max(ratio, 0), 1);
+			console.log("Future height: " + ratio);
 
 			return graphHeight * ratio; 
 		},
