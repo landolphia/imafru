@@ -145,6 +145,35 @@ if (Meteor.isClient) {
 		}
 	});
 
+	Template.registerHelper('height', function (a, future) {
+			var graphHeight = Session.get("graphHeight");
+
+			if (this.dayoff) {
+				if (a == "anti") return graphHeight;
+				else return 0;
+			}
+
+			var max = Session.get("max") * 1.25;
+			var ratio;
+
+			if (future == "future") {
+				var total = Session.get("total"); // or 0
+				var dayoffsLeft = Session.get("dayoffsLeft"); //or 0
+				var activeDaysLeft = (7 - dayoffset - dayoffsLeft);
+
+				var goal = parseFloat(Session.get("goal"));
+
+				if (activeDaysLeft != 0) ratio = (((goal - total) / activeDaysLeft) / max);
+				else ratio = 0;
+
+			} else ratio = this.amount / max;
+
+			if (a == "anti") ratio = 1 - ratio;
+			ratio = Math.min(Math.max(ratio, 0), 1);
+
+			return graphHeight * ratio;
+	});
+
 	Template.week.events({
 		'focus input[type="number"]': function (e) { e.target.select();},
 		'blur input[type="number"], click input[type="button"], submit form': function (e) {
@@ -262,22 +291,6 @@ if (Meteor.isClient) {
 			if (this.amount < (0.6 * average)) result = "belowaverage";
 			return result;
 		},
-		'height': function (a) {
-			var graphHeight = Session.get("graphHeight");
-
-			if (this.dayoff) {
-				if (a == "anti") return graphHeight;
-				else return 0;
-			}
-
-			var max = Session.get("max");
-			var ratio = this.amount / (1.25 * max);
-
-			if (a == "anti") ratio = 1 - ratio;
-			ratio = Math.min(Math.max(ratio, 0), 1);
-
-			return graphHeight * ratio;
-		},
 		'display': function () { return (this.amount==0?"dontdisplay":"");} 
 	});
 
@@ -327,22 +340,6 @@ if (Meteor.isClient) {
 			//}
 			//return Session.get("averageLeftToGoal");
 		},
-		'height': function (a) {
-			var graphHeight = Session.get("graphHeight");
-
-			if (this.dayoff) {
-				if (a == "anti") return graphHeight;
-				else return 0;
-			}
-
-			var max = Session.get("max");
-			var ratio = this.amount / (1.25 * max);
-
-			if (a == "anti") ratio = 1 - ratio;
-			ratio = Math.min(Math.max(ratio, 0), 1);
-
-			return graphHeight * ratio;
-		},
 		'display': function () { return (this.amount==0 || this.dayoff==true?"dontdisplay":"");} 
 	});
 
@@ -379,33 +376,6 @@ if (Meteor.isClient) {
 			var dayofweek = this.date.getDay() - 1;
 			if (dayofweek < 0) dayofweek = 6;
 			return names[dayofweek];
-		},
-		'height': function (a) {
-			var graphHeight = Session.get("graphHeight");
-			if (this.dayoff) {
-				if (a == "anti") return graphHeight;
-				else return 0;
-			}
-
-			var total = Session.get("total"); // or 0
-			var dayoffsLeft = Session.get("dayoffsLeft"); //or 0
-			var activeDaysLeft = (7 - dayoffset - dayoffsLeft);
-
-			var max = Session.get("max");
-			var adjMax = 1.25 * max;
-
-			var goal = parseFloat(Session.get("goal"));
-
-			var ratio;
-			if (activeDaysLeft != 0) {
-				if (a != "anti") ratio = (((goal - total) / activeDaysLeft) / adjMax);
-				else ratio = 1 - (((goal - total) / activeDaysLeft) / adjMax);
-			} else ratio = 0;
-
-			ratio = Math.min(Math.max(ratio, 0), 1);
-			console.log("Future height: " + ratio);
-
-			return graphHeight * ratio; 
 		},
 		'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
 	});
