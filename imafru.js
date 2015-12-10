@@ -38,7 +38,7 @@ if (Meteor.isClient) {
 
 			Session.set("max", max);
 			Session.set("total", parseFloat(total).toFixed(2));
-			Session.set("graphHeight", 180);
+			Session.set("graphHeight", 200);
 
 			range = {"date" : {$gte : monday.toDate(), $lte : sunday.toDate()}, "dayoff" : false};
 			var activeDays = 0;
@@ -289,8 +289,8 @@ if (Meteor.isClient) {
 		'performance': function () {
 			var result = "";
 			var average = Session.get("average");
-			if (this.amount > (1.2 * average)) result = "aboveaverage ";
-			if (this.amount < (0.6 * average)) result = "belowaverage";
+			if (this.amount > (1.1 * average)) result = "aboveaverage ";
+			if (this.amount < (0.7 * average)) result = "belowaverage";
 			return result;
 		},
 		'display': function () { return (this.amount==0?"dontdisplay":"");} 
@@ -361,8 +361,8 @@ if (Meteor.isClient) {
 			var result = "";
 			var average = Session.get("average");
 			var averagetogoal = Session.get("averageLeftToGoal");
-			if (average > (1.2 * averagetogoal)) result = "easy";
-			if (average < (0.8 * averagetogoal)) result = "hard";
+			if (average > (1.1 * averagetogoal)) result = "easy";
+			if (average < (0.9 * averagetogoal)) result = "hard";
 			return result;
 		},
 		'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
