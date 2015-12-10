@@ -174,6 +174,8 @@ if (Meteor.isClient) {
 			return graphHeight * ratio;
 	});
 
+	Template.registerHelper('offday', function () { return (this.dayoff?"dayoff":"");});
+
 	Template.registerHelper('weekday', function () {
 		var names=["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
 		var dayofweek = this.date.getDay() - 1;
@@ -284,7 +286,6 @@ if (Meteor.isClient) {
 	});
 
 	Template.pastDay.helpers({
-		'offday': function () { return (this.dayoff?"dayoff":"");},
 		'performance': function () {
 			var result = "";
 			var average = Session.get("average");
@@ -320,7 +321,6 @@ if (Meteor.isClient) {
 	});	
 
 	Template.presentDay.helpers({
-		'offday': function () { return (this.dayoff?"dayoff":"");},
 		'needed': function () {
 			var result = Session.get("averageLeftToGoal");
 			return Math.max(result - this.amount, 0);
@@ -353,7 +353,6 @@ if (Meteor.isClient) {
 	});	
 
 	Template.futureDay.helpers({
-		'offday': function () { return (this.dayoff?"dayoff":"");},		
 		'needed': function () {
 			var result = Session.get("averageLeftToGoal");
 			return result;
