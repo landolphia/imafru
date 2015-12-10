@@ -174,6 +174,13 @@ if (Meteor.isClient) {
 			return graphHeight * ratio;
 	});
 
+	Template.registerHelper('weekday', function () {
+		var names=["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+		var dayofweek = this.date.getDay() - 1;
+		if (dayofweek < 0) dayofweek = 6;
+		return names[dayofweek];
+	});
+
 	Template.week.events({
 		'focus input[type="number"]': function (e) { e.target.select();},
 		'blur input[type="number"], click input[type="button"], submit form': function (e) {
@@ -278,12 +285,6 @@ if (Meteor.isClient) {
 
 	Template.pastDay.helpers({
 		'offday': function () { return (this.dayoff?"dayoff":"");},
-		'weekday': function () {
-			var names=["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
-			var dayofweek = this.date.getDay() - 1;
-			if (dayofweek < 0) dayofweek = 6;
-			return names[dayofweek];
-		},
 		'performance': function () {
 			var result = "";
 			var average = Session.get("average");
@@ -320,12 +321,6 @@ if (Meteor.isClient) {
 
 	Template.presentDay.helpers({
 		'offday': function () { return (this.dayoff?"dayoff":"");},
-		'weekday': function () {
-			var names=["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
-			var dayofweek = this.date.getDay() - 1;
-			if (dayofweek < 0) dayofweek = 6;
-			return names[dayofweek];
-		},
 		'needed': function () {
 			var result = Session.get("averageLeftToGoal");
 			return Math.max(result - this.amount, 0);
@@ -370,12 +365,6 @@ if (Meteor.isClient) {
 			if (average > (1.2 * averagetogoal)) result = "easy";
 			if (average < (0.8 * averagetogoal)) result = "hard";
 			return result;
-		},
-		'weekday': function () {
-			var names=["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
-			var dayofweek = this.date.getDay() - 1;
-			if (dayofweek < 0) dayofweek = 6;
-			return names[dayofweek];
 		},
 		'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
 	});
