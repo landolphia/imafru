@@ -19,6 +19,10 @@ if (Meteor.isClient) {
 		Session.set("goal", 150);
 	});
 
+	Accounts.ui.config({
+		passwordSignupFields: "EMAIL_ONLY"
+	});
+
 	Template.body.helpers({
 		'stats': function () {
 			//TODO consolidate queries and move to server
@@ -265,22 +269,32 @@ if (Meteor.isClient) {
 		},
 		'click .weekday' : function (e) {
 			e.preventDefault();
-			Days.update(this._id, {$set : {dayoff : !this.dayoff}});
+			Meteor.call("toggleDayOff", this._id, function (err, data) {
+				if (err) console.log("error: [toggleDayOff] -> " + err);
+				else console.log("toggleDayOff success");
+			});
 		},
 		'click .set': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
+
+			Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+				if (err) console.log("error: [editAmount] -> " + err);
+				else console.log("editAmount success");
+			});
 		},
 		'click .add': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.find(this._id).forEach( function(d) { amount += parseFloat(d.amount);});
-			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
+
+			Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+				if (err) console.log("error: [addToAmount] -> " + err);
+				else console.log("addToAmount success");
+			});
 		},
 		'submit .update': function (e) { e.preventDefault();}
 	});
@@ -300,22 +314,32 @@ if (Meteor.isClient) {
 		'focus .earning': function (e) { e.target.select();},
 		'click .today' : function (e) {
 			e.preventDefault();
-			Days.update(this._id, {$set : {dayoff : !this.dayoff}});
+			Meteor.call("toggleDayOff", this._id, function (err, data) {
+				if (err) console.log("error: [toggleDayOff] -> " + err);
+				else console.log("toggleDayOff success");
+			});
 		},
 		'click .set': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
+
+			Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+				if (err) console.log("error: [editAmount] -> " + err);
+				else console.log("editAmount success");
+			});
 		},
 		'click .add': function (e) {
 			e.preventDefault();
 			var target = e.target;
 			var container = target.parentNode;
 			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
-			Days.find(this._id).forEach( function(d) { amount += parseFloat(d.amount);});
-			Days.update(this._id, { $set: {amount: parseFloat(amount).toFixed(2)}});
+
+			Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+				if (err) console.log("error: [addToAmount] -> " + err);
+				else console.log("addToAmount success");
+			});
 		},
 		'submit .update': function (e) { e.preventDefault();}
 	});	
@@ -341,14 +365,10 @@ if (Meteor.isClient) {
 	Template.futureDay.events({
 		'click .weekday' : function (e) {
 			e.preventDefault();
-			Days.update(this._id, {$set : {dayoff : !this.dayoff}});
-		},
-		'click .updateButton': function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var amount = container.getElementsByTagName('input')[0];
-			Days.update(this._id, { $set: {amount: parseInt(amount.value).toFixed(2)}});
+			Meteor.call("toggleDayOff", this._id, function (err, data) {
+				if (err) console.log("error: [toggleDayOff] -> " + err);
+				else console.log("toggleDayOff success");
+			});
 		}
 	});	
 
@@ -375,19 +395,46 @@ if (Meteor.isServer) {
 			//Meteor.call("console", "Frankenstein!");
 			console.log("console: " + m);
 		},
-		'weeklymax': function () {
-			var range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
+		editAmount: function (id, amount) {
+			if (! Meteor.userId()) {
+				throw new Meteor.Error("not-authorized");
+			}
 
-			var max = 0;
-			Days.find(range).forEach(function (day) {
-				if (day.amount && day.amount > max) max = day.amount.toFixed(2);
-			});
+			console.log("editAmount: " + amount);
+			console.log("client id: " + Meteor.userId());
+			Days.find(id).forEach( function(d) { console.log("record user id: " + d.owner)});
+			Days.update(id, {$set : {amount: amount}});
+		},
+		addToAmount: function (id, amount) {
+			if (! Meteor.userId()) {
+				throw new Meteor.Error("not-authorized");
+			}
 
-			return max;
+			console.log("addToAmount: " + amount);
+			console.log("client id: " + Meteor.userId());
+			Days.find(id).forEach( function(d) { console.log("record user id: " + d.owner)});
+			amount = parseFloat(amount);
+			Days.find(id).forEach( function(d) { amount += parseFloat(d.amount);});
+			console.log("final amount: " + amount);
+			Days.update(id, { $set: {amount: parseFloat(amount).toFixed(2)}});
+		},
+		toggleDayOff: function (id) {
+			if (! Meteor.userId()) {
+				throw new Meteor.Error("not-authorized");
+			}
+
+			var dayoff;
+			Days.find(id).forEach( function(d) { dayoff = d.dayoff;});
+			console.log("toggleDayOff: " + dayoff);
+			console.log("client id: " + Meteor.userId());
+			Days.find(id).forEach( function(d) { console.log("record user id: " + d.owner)});
+			Days.update(id, { $set: {dayoff: !dayoff}});
 		}
 	});
 
 	Meteor.publish("days", function (offset) {
+		if (! this.userId) return; 
+
 		var date = new Date();
 		var localoffset = date.getTimezoneOffset();
 		var finaloffset = offset - localoffset;
@@ -418,7 +465,7 @@ if (Meteor.isServer) {
 		console.log("This week's range is " + mon.calendar() + " to " + sun.calendar());
 		console.log("Dayoffset = " + weekday);
 
-		var range = {"date" : {$gte : mon.toDate(), $lte : sun.toDate()}};
+		var range = {"date" : {$gte : mon.toDate(), $lte : sun.toDate()}, "owner": this.userId};
 
 		if (Days.find(range).count() != 7) {
 			Days.remove(range);
@@ -444,13 +491,13 @@ if (Meteor.isServer) {
 			//Days.insert({date: saturday.toDate(), amount: 0, dayoff: true});
 			//Days.insert({date: sun.toDate(), amount: 0, dayoff: true});
 			
-			Days.insert({date: mon.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: tuesday.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: wednesday.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: thursday.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: friday.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: saturday.toDate(), amount: 0, dayoff: true});
-			Days.insert({date: sun.toDate(), amount: 0, dayoff: true});
+			Days.insert({date: mon.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: tuesday.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: wednesday.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: thursday.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: friday.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: saturday.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: sun.toDate(), amount: 0, dayoff: true, owner: this.userId});
 		}
 
 		Days.find(range).forEach(function (day) {

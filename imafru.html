@@ -9,6 +9,10 @@
 
 <body>
 	{{stats}}
+
+	{{> loginButtons}}
+
+	{{#if currentUser}}
 	<div class="days">
 		{{#each pastDays}}
 		{{> pastDay}}
@@ -24,6 +28,7 @@
 	<div class="week" style="margin-top: 50px;">
 		{{> week}}
 	</div>
+	{{/if}}
 </body>
 
 <template name="week">
