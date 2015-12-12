@@ -8,11 +8,11 @@
 </head>
 
 <body>
-	{{stats}}
 
 	{{> loginButtons}}
 
 	{{#if currentUser}}
+	{{stats}}
 	<div class="days">
 		{{#each pastDays}}
 		{{> pastDay}}
@@ -28,13 +28,15 @@
 	<div class="week" style="margin-top: 50px;">
 		{{> week}}
 	</div>
+	{{else}}
+	<div>Display Help</div>
 	{{/if}}
 </body>
 
 <template name="week">
 <div class="goal">
 	<form>
-		<input type="number" min=0 value={{goal}}>
+		<input type="number" min=0 value={{currentUser.weeklyGoal}}>
 		<input type="button" value="goal">
 	</form>
 </div>

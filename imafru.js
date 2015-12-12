@@ -14,13 +14,10 @@ if (Meteor.isClient) {
 	console.log("This week's range is " + monday.calendar() + " to " + sunday.calendar());
 
 	Meteor.subscribe("days", today.getTimezoneOffset());
-
-	Meteor.startup(function () {
-		Session.set("goal", 150);
-	});
+	Meteor.subscribe("userData");
 
 	Accounts.ui.config({
-		passwordSignupFields: "EMAIL_ONLY"
+		passwordSignupFields: "USERNAME_AND_OPTIONAL_EMAIL"
 	});
 
 	Template.body.helpers({
@@ -29,7 +26,8 @@ if (Meteor.isClient) {
 			//the server returns an object like so {max: 5, total: 25, foo: bar}
 			//this functions puts the results in the appropriate session variables
 			//http://paletton.com/#uid=43n0u0kI-D2mTJutrIoJqriLxlf
-			var goal = Session.get("goal");
+
+			var goal = Meteor.user().weeklyGoal;
 			var range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
 			var total = 0;
 			var max = 0;
@@ -165,7 +163,7 @@ if (Meteor.isClient) {
 				var dayoffsLeft = Session.get("dayoffsLeft"); //or 0
 				var activeDaysLeft = (7 - dayoffset - dayoffsLeft);
 
-				var goal = parseFloat(Session.get("goal"));
+				var goal = parseFloat(Meteor.user().weeklyGoal);
 
 				if (activeDaysLeft != 0) ratio = (((goal - total) / activeDaysLeft) / max);
 				else ratio = 0;
@@ -191,18 +189,22 @@ if (Meteor.isClient) {
 		'focus input[type="number"]': function (e) { e.target.select();},
 		'blur input[type="number"], click input[type="button"], submit form': function (e) {
 			e.preventDefault();
-			var container = e.target.parentNode;
-			var amount = container.getElementsByTagName('input')[0].value;
-			Session.set("goal", parseInt(amount).toFixed(0));
+			if (Meteor.userId()) {
+				var container = e.target.parentNode;
+				var amount = container.getElementsByTagName('input')[0].value;
+				Meteor.call("editGoal", parseInt(amount).toFixed(0), function (err, data) {
+					if (err) console.log("error: [editGoal] -> " + err);
+					else console.log("editGoal success");
+				});
+			}
 		}
 	});
 
 	Template.week.helpers({
-		'goal': function () { return Session.get("goal");},
 		'projection': function () { return Session.get("projection");},
 		'leftvalue': function () {
 			var result = "NA";
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			if (goal < total) result = parseInt(goal);
 			else result = parseFloat(total);
@@ -211,25 +213,25 @@ if (Meteor.isClient) {
 		},
 		'rightvalue': function () {
 			var result = "NA";
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			if (goal < total) result = parseInt(total - goal);
 			else result = parseInt(goal - total);
 			return result.toFixed(2);
 		},
 		'lefthue': function () {
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			return (goal<total?"goaldoneleft":"goalleftleft");
 		},
 		'righthue': function () {
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			return (goal<total?"goaldoneright":"goalleftright");
 		},
 		'left': function () {
 			var ratio = 0;
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			if (goal < total) ratio = goal / total; 
 			else ratio = total / goal;
@@ -240,7 +242,7 @@ if (Meteor.isClient) {
 		},
 		'right': function () {
 			var ratio = 100;
-			var goal = parseFloat(Session.get("goal"));
+			var goal = parseFloat(Meteor.user().weeklyGoal);
 			var total = parseFloat(Session.get("total"));
 			if (goal < total) ratio = (total - goal) / total; 
 			else ratio = (goal - total) / goal;
@@ -261,11 +263,8 @@ if (Meteor.isClient) {
 			form.classList.toggle('dontdisplay');
 
 			var icon = e.target.src.toString().search("lock-unlocked");
-			console.log("edit: + " + e.target.src);
-			console.log("icon: + " + icon);
 			if (icon == -1) e.target.src = e.target.src.replace("lock-locked", "lock-unlocked");
 			else e.target.src = e.target.src.replace("lock-unlocked", "lock-locked");
-			console.log("edit: + " + e.target.src);
 		},
 		'click .weekday' : function (e) {
 			e.preventDefault();
@@ -390,18 +389,35 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+	Accounts.onCreateUser(function(options, user) {
+		user.weeklyGoal = 50;
+		if (options.profile) user.profile = options.profile;
+		return user;
+	});
+
+	Meteor.publish("userData", function () {
+		if (this.userId) {
+			return Meteor.users.find({_id: this.userId}, {fields: {'weeklyGoal': 1}});
+		} else {
+			this.ready();
+		}
+	});
+
 	Meteor.methods({
 		'console': function(m){
 			//Meteor.call("console", "Frankenstein!");
 			console.log("console: " + m);
 		},
+		editGoal: function (goal) {
+			if (! Meteor.userId()) {
+				throw new Meteor.Error("not-authorized");
+			}
+			Meteor.users.update(Meteor.userId(), {$set : {weeklyGoal: goal}});
+		},
 		editAmount: function (id, amount) {
 			if (! Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
-
-			console.log("editAmount: " + amount);
-			console.log("client id: " + Meteor.userId());
 			Days.find(id).forEach( function(d) { console.log("record user id: " + d.owner)});
 			Days.update(id, {$set : {amount: amount}});
 		},
@@ -409,13 +425,8 @@ if (Meteor.isServer) {
 			if (! Meteor.userId()) {
 				throw new Meteor.Error("not-authorized");
 			}
-
-			console.log("addToAmount: " + amount);
-			console.log("client id: " + Meteor.userId());
-			Days.find(id).forEach( function(d) { console.log("record user id: " + d.owner)});
 			amount = parseFloat(amount);
 			Days.find(id).forEach( function(d) { amount += parseFloat(d.amount);});
-			console.log("final amount: " + amount);
 			Days.update(id, { $set: {amount: parseFloat(amount).toFixed(2)}});
 		},
 		toggleDayOff: function (id) {
