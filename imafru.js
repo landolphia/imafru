@@ -91,7 +91,7 @@ if (Meteor.isClient) {
 
 			var projection = "NA";
 			if (pastActive != 0) {
-				var daysleft = (7 - dayoffset - dayoffsLeft);
+				var daysleft = (6 - dayoffset - dayoffsLeft);
 
 				projection = total;
 				if (daysleft != 0) {
