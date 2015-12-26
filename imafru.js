@@ -23,8 +23,7 @@ if (Meteor.isClient) {
 	Template.body.helpers({
 		'stats': function () {
 			//TODO consolidate queries and move to server
-			//the server returns an object like so {max: 5, total: 25, foo: bar}
-			//this functions puts the results in the appropriate session variables
+			//which should return a stat json object with for now week, then for month
 			//http://paletton.com/#uid=43n0u0kI-D2mTJutrIoJqriLxlf
 
 			Session.set("graphHeight", 200);
@@ -35,12 +34,12 @@ if (Meteor.isClient) {
 
 			if (typeof week == "undefined") return;
 
-			//Open/active days
-			week.opendaysLeft = 0;
-			var range = {"date" : {$gte : today, $lte : sunday.toDate()}, "dayoff" : false};
-			Days.find(range).forEach( function (day) { week.opendaysLeft++;});
+			console.log("user weekly goal: " + week.goal);
+			console.table(week);
 
-			((week.opendaysLeft != 0)?week.averageToGoal = parseFloat(week.toGoal/ week.opendaysLeft).toFixed(2):week.averageToGoal="NA");
+			week.opendaysLeft = 0;
+			var range = {"date" : {$gt : today, $lte : sunday.toDate()}, "dayoff" : false};
+			Days.find(range).forEach( function (day) { week.opendaysLeft++;});
 
 			range = {"date" : {$gte : monday.toDate(), $lte : sunday.toDate()}, "dayoff" : false};
 			week.opendaysTotal= 0;
@@ -48,50 +47,48 @@ if (Meteor.isClient) {
 				week.opendaysTotal++;
 			});
 
-			//Other stats
 			week.total = 0;
 			week.max = 0;
 			range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
+			var todaysEarning = 0;
 			Days.find(range).forEach(function (day) {
 				if (day.amount && day.amount > 0) {
+					todaysEarning = parseFloat(day.amount);
 					week.total += parseFloat(day.amount);
 					if (week.max < day.amount) week.max = day.amount;
 				}
 			});
-			week.toGoal = Math.max(0, week.goal- week.total),
 
-			//Past
+			week.totalBeforeToday = (week.total - todaysEarning).toFixed(2);
+
+			week.toGoal = Math.max(0, week.goal- week.total);
+			
+			if(week.opendaysLeft >= 0) week.averageToGoal = parseFloat(week.toGoal/ week.opendaysLeft).toFixed(2);
+			else week.averageToGoal="NA";
+
 			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false};
 			week.opendaysPassed = 0;
 			Days.find(range, {sort: {date: 1}}).forEach(function (day) {
 				week.opendaysPassed++;
 			});
 
-			//Future
 			range = {"date" : {$gte : today, $lte : sunday.toDate()}};
 			week.closeddaysLeft= 0;
 			Days.find(range).forEach(function (day) {
 				if (day.dayoff) week.closeddaysLeft++;
 			});
 
-			//More Stats
-			week.currentAverage = "NA";
+			week.currentAverage = 0;
+			week.pastAverage = 0;
 			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false};
-			if (week.opendaysPassed != 0) { week.currentAverage = (week.total / week.opendaysPassed).toFixed(2);}
-
-			week.projection = "NA";
-			if (week.opendaysPassed != 0) {
-				week.daysleft = (6 - dayoffset - week.closeddaysLeft);
-				week.projection = week.total;
-				if (week.daysleft != 0) {
-					week.projection = week.projection  + (week.Average * week.daysleft);
-				}
-				week.projection = parseFloat(week.projection).toFixed(2);
+			if (week.opendaysPassed >= 0) {
+				week.currentAverage = (week.total / week.opendaysPassed).toFixed(2);
+				week.pastAverage = (week.totalBeforeToday / week.opendaysPassed).toFixed(2);
 			}
 
-			week.overallAverage = (week.total / (dayoffset + 1)).toFixed(2); //(day+1) could be 7
+			week.pastProjection = (week.total + parseFloat(week.pastAverage) * week.opendaysLeft).toFixed(2);
+			week.currentProjection = (week.total + ((parseFloat(week.currentAverage) + parseFloat(week.pastAverage)) * 0.5) * week.opendaysLeft).toFixed(2);
 
-			week.needed = "NA";
 			week.needed = (week.goal - week.total).toFixed(2);
 			if (week.needed <= 0) week.needed = "Done!";
 
@@ -110,6 +107,13 @@ if (Meteor.isClient) {
 		}
 	});
 
+	Template.registerHelper('needed', function () {
+		var result = 0;
+		var week = Session.get("week");
+		if (week.opendaysLeft >= 0) result = week.needed / week.opendaysLeft;
+		return result.toFixed(2);
+	});
+
 	Template.registerHelper('height', function (a, future) {
 			var graphHeight = Session.get("graphHeight");
 
@@ -124,11 +128,7 @@ if (Meteor.isClient) {
 			var ratio;
 
 			if (future == "future") {
-				var dayoffsLeft = Session.get("dayoffsLeft"); //or 0
-				var activeDaysLeft = (7 - dayoffset - dayoffsLeft);
-
-
-				if (activeDaysLeft != 0) ratio = (((week.goal - week.total) / activeDaysLeft) / max);
+				if (week.opendaysLeft >= 0) ratio = week.averageToGoal / max;
 				else ratio = 0;
 
 			} else ratio = this.amount / max;
@@ -307,20 +307,6 @@ if (Meteor.isClient) {
 	});	
 
 	Template.presentDay.helpers({
-		'needed': function () {
-			var result = Session.get("averageLeftToGoal");
-			return Math.max(result - this.amount, 0);
-			//var averageLeftToGoal = Session.get("averageLeftToGoal");
-			//console.log("Checking: " + averageLeftToGoal);
-			//if (typeof averageLeftToGoal != "undefined" && averageLeftToGoal != 0) {
-			//	console.log(Session.get("averageLeftToGoal") + " YOYO");
-			//	return (Session.get("averageLeftToGoal") - this.amount);
-			//} else {
-			//	console.log("No thing");
-			//	return "b";
-			//}
-			//return Session.get("averageLeftToGoal");
-		},
 		'display': function () { return (this.amount==0 || this.dayoff==true?"dontdisplay":"");} 
 	});
 
@@ -335,10 +321,6 @@ if (Meteor.isClient) {
 	});	
 
 	Template.futureDay.helpers({
-		'needed': function () {
-			var result = Session.get("averageLeftToGoal");
-			return result;
-		},
 		'difficulty': function () {
 			var result = "";
 			var week = Session.get("week");
@@ -416,23 +398,16 @@ if (Meteor.isServer) {
 		date.setMilliseconds(0);
 		date = moment(date).add(finaloffset, 'minutes').toDate();
 
-
-		Days.find(this.userId).forEach(function (day) {
-			console.log("Before Day: " + day.date + " + " + day.amount + " / " + day.dayoff);
-		});
 		//Days.remove({"owner": this.userId});
 
 		var weekday = moment(date).isoWeekday() - 1;
 		var mon = moment(date).subtract(weekday, 'days');
-		var sun = moment(mon).add(6, 'days');
-
-		var before = moment(mon).subtract(1, 'days');
 		var tuesday = moment(mon).add(1, 'days');
 		var wednesday = moment(mon).add(2, 'days');
 		var thursday = moment(mon).add(3, 'days');
 		var friday = moment(mon).add(4, 'days');
 		var saturday = moment(mon).add(5, 'days');
-		var after = moment(mon).add(7, 'days');
+		var sun = moment(mon).add(6, 'days');
 
 		var range = {"date" : {$gte : mon.toDate(), $lte : sun.toDate()}, "owner": this.userId};
 
@@ -445,6 +420,7 @@ if (Meteor.isServer) {
 			Days.insert({date: friday.toDate(), amount: 57.67, dayoff: false, owner: this.userId});
 			Days.insert({date: saturday.toDate(), amount: 48.96, dayoff: false, owner: this.userId});
 			Days.insert({date: sun.toDate(), amount: 0, dayoff: true, owner: this.userId});
+
 			//Days.insert({date: mon.toDate(), amount: 0, dayoff: true});
 			//Days.insert({date: tuesday.toDate(), amount: 0, dayoff: true});
 			//Days.insert({date: wednesday.toDate(), amount: 21.55, dayoff: false});
@@ -452,6 +428,7 @@ if (Meteor.isServer) {
 			//Days.insert({date: friday.toDate(), amount: 0, dayoff: false});
 			//Days.insert({date: saturday.toDate(), amount: 0, dayoff: false});
 			//Days.insert({date: sun.toDate(), amount: 0, dayoff: true});
+			
 			//Days.insert({date: mon.toDate(), amount: 29.45, dayoff: false});
 			//Days.insert({date: tuesday.toDate(), amount: 63.22, dayoff: false});
 			//Days.insert({date: wednesday.toDate(), amount: 47.88, dayoff: false});
