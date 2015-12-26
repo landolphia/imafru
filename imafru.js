@@ -20,6 +20,18 @@ if (Meteor.isClient) {
 		passwordSignupFields: "USERNAME_AND_OPTIONAL_EMAIL"
 	});
 
+	Meteor.startup( function () {
+		var s = Snap(250, 200);
+		var circle = s.circle(25, 25, 20);
+		circle.attr({
+			    fill: "#bada55",
+			    stroke: "#000",
+			    strokeWidth: 5
+		});
+		circle.animate({r: 40}, 2000);
+		s.text(30, 30, "Text");
+	});
+
 	Template.body.helpers({
 		'stats': function () {
 			//TODO consolidate queries and move to server
