@@ -20,16 +20,22 @@ if (Meteor.isClient) {
 		passwordSignupFields: "USERNAME_AND_OPTIONAL_EMAIL"
 	});
 
-	Meteor.startup( function () {
-		var s = Snap(250, 200);
-		var circle = s.circle(25, 25, 20);
-		circle.attr({
-			    fill: "#bada55",
-			    stroke: "#000",
-			    strokeWidth: 5
-		});
-		circle.animate({r: 40}, 2000);
-		s.text(30, 30, "Text");
+	Template.presentDaySVG.onRendered( function () {
+		console.log("SVGING");
+		var container = this.find(".svgcontainer");
+		var hook = this.find(".svghook");
+
+		if (!this.data.dayoff) {
+			var s = Snap(hook);
+			var amount = this.data.amount;
+			var rec = s.rect(5, container.offsetHeight - this.data.amount - 5, container.offsetWidth - this.data.amount, 40, 3, 3);
+			rec.attr({
+				fill: "#bada55",
+				stroke: "#000",
+				strokeWidth: 1
+			});
+			s.text(30, 30, "$" + this.data.amount);
+		} else s.text(30, 30, "Day off");
 	});
 
 	Template.body.helpers({
@@ -45,9 +51,6 @@ if (Meteor.isClient) {
 			var week = Meteor.users.findOne({_id: Meteor.user()._id}).week;
 
 			if (typeof week == "undefined") return;
-
-			console.log("user weekly goal: " + week.goal);
-			console.table(week);
 
 			week.opendaysLeft = 0;
 			var range = {"date" : {$gt : today, $lte : sunday.toDate()}, "dayoff" : false};
@@ -104,7 +107,7 @@ if (Meteor.isClient) {
 			week.needed = (week.goal - week.total).toFixed(2);
 			if (week.needed <= 0) week.needed = "Done!";
 
-			console.log("week -> " + JSON.stringify(week));
+			//console.log("week -> " + JSON.stringify(week));
 
 			Session.set("week", week);
 		},
