@@ -21,12 +21,12 @@ if (Meteor.isClient) {
 	});
 
 	Template.presentDaySVG.onRendered( function () {
-		console.log("SVGING");
+		//console.log("SVGING");
 		var container = this.find(".svgcontainer");
 		var hook = this.find(".svghook");
 
+		var s = Snap(hook);
 		if (!this.data.dayoff) {
-			var s = Snap(hook);
 			var amount = this.data.amount;
 			var rec = s.rect(5, container.offsetHeight - this.data.amount - 5, container.offsetWidth - this.data.amount, 40, 3, 3);
 			rec.attr({
@@ -46,17 +46,46 @@ if (Meteor.isClient) {
 
 			Session.set("graphHeight", 200);
 
-			var monthly = {};//do like week, maybe factorizeish
+
+			var month = Meteor.users.findOne({_id: Meteor.user()._id}).month;
+			if (typeof month == "undefined") return;
+
+			var currentYear = moment(today).year();
+			var currentMonth = moment(today).month();
+
+			var firstOfMonth = moment(currentYear + "-" + (currentMonth+1) + "-01", "YYYY-MM-DD");
+			var firstOfNextMonth = moment((currentMonth<11?currentYear:currentYear+1) + "-" + (currentMonth<11?currentMonth+1:1) + "-01", "YYYY-MM-DD");
+			console.log("First of this month: " + firstOfMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+			console.log("First of next month: " + firstOfNextMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+
+			var range = {"date" : {$gte : firstOfMonth.toDate(), $lt : firstOfNextMonth.toDate()}, "dayoff" : false, "owner": Meteor.user()._id};
+
+			month.total = 0;
+			month.max = 0;
+			month.daysWorked = 0;
+			Days.find(range).forEach(function (day) {
+				if (day.amount && day.amount > 0) {
+					month.daysWorked++;
+					month.total += parseFloat(day.amount);
+					if (month.max < day.amount) month.max = day.amount;
+				}
+			});
+
+			//TODO weekly average, weekly average needed and such things
+
+			console.log("month -> " + JSON.stringify(month));
+			Session.set("month", month);
+
+
 
 			var week = Meteor.users.findOne({_id: Meteor.user()._id}).week;
-
 			if (typeof week == "undefined") return;
 
 			week.opendaysLeft = 0;
-			var range = {"date" : {$gt : today, $lte : sunday.toDate()}, "dayoff" : false};
+			range = {"date" : {$gt : today, $lte : sunday.toDate()}, "dayoff" : false, "owner": Meteor.user()._id};
 			Days.find(range).forEach( function (day) { week.opendaysLeft++;});
 
-			range = {"date" : {$gte : monday.toDate(), $lte : sunday.toDate()}, "dayoff" : false};
+			range = {"date" : {$gte : monday.toDate(), $lte : sunday.toDate()}, "dayoff" : false, "owner": Meteor.user()._id};
 			week.opendaysTotal= 0;
 			Days.find(range).forEach(function (day) {
 				week.opendaysTotal++;
@@ -64,7 +93,7 @@ if (Meteor.isClient) {
 
 			week.total = 0;
 			week.max = 0;
-			range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false};
+			range = {"date" : {$gte : monday.toDate(), $lte : today}, "dayoff" : false, "owner": Meteor.user()._id};
 			var todaysEarning = 0;
 			Days.find(range).forEach(function (day) {
 				if (day.amount && day.amount > 0) {
@@ -81,13 +110,13 @@ if (Meteor.isClient) {
 			if(week.opendaysLeft >= 0) week.averageToGoal = parseFloat(week.toGoal/ week.opendaysLeft).toFixed(2);
 			else week.averageToGoal="NA";
 
-			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false};
+			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false, "owner": Meteor.user()._id};
 			week.opendaysPassed = 0;
 			Days.find(range, {sort: {date: 1}}).forEach(function (day) {
 				week.opendaysPassed++;
 			});
 
-			range = {"date" : {$gte : today, $lte : sunday.toDate()}};
+			range = {"date" : {$gte : today, $lte : sunday.toDate()}, "owner": Meteor.user()._id};
 			week.closeddaysLeft= 0;
 			Days.find(range).forEach(function (day) {
 				if (day.dayoff) week.closeddaysLeft++;
@@ -95,7 +124,7 @@ if (Meteor.isClient) {
 
 			week.currentAverage = 0;
 			week.pastAverage = 0;
-			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false};
+			range = {"date" : {$gte : monday.toDate(), $lt : today}, "dayoff" : false, "owner": Meteor.user()._id};
 			if (week.opendaysPassed >= 0) {
 				week.currentAverage = (week.total / week.opendaysPassed).toFixed(2);
 				week.pastAverage = (week.totalBeforeToday / week.opendaysPassed).toFixed(2);
@@ -107,7 +136,7 @@ if (Meteor.isClient) {
 			week.needed = (week.goal - week.total).toFixed(2);
 			if (week.needed <= 0) week.needed = "Done!";
 
-			//console.log("week -> " + JSON.stringify(week));
+			console.log("week -> " + JSON.stringify(week));
 
 			Session.set("week", week);
 		},
@@ -351,13 +380,14 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
 	Accounts.onCreateUser(function(options, user) {
 		user.week = {"goal": 50};
+		user.month = {"goal": 200};
 		if (options.profile) user.profile = options.profile;
 		return user;
 	});
 
 	Meteor.publish("userData", function () {
 		if (this.userId) {
-			return Meteor.users.find({_id: this.userId}, {fields: {'week': 1}});
+			return Meteor.users.find({_id: this.userId}, {fields: {'week': 1, 'month': 1}});
 		} else {
 			this.ready();
 		}
@@ -427,48 +457,71 @@ if (Meteor.isServer) {
 		var range = {"date" : {$gte : mon.toDate(), $lte : sun.toDate()}, "owner": this.userId};
 
 		if (Days.find(range).count() != 7) {
-			Days.remove(range);
-			Days.insert({date: mon.toDate(), amount: 0, dayoff: true, owner: this.userId});
-			Days.insert({date: tuesday.toDate(), amount: 30.50, dayoff: false, owner: this.userId});
-			Days.insert({date: wednesday.toDate(), amount: 10, dayoff: false, owner: this.userId});
-			Days.insert({date: thursday.toDate(), amount: 30.9, dayoff: false, owner: this.userId});
-			Days.insert({date: friday.toDate(), amount: 57.67, dayoff: false, owner: this.userId});
-			Days.insert({date: saturday.toDate(), amount: 48.96, dayoff: false, owner: this.userId});
-			Days.insert({date: sun.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			var anchor = new moment("2015-11-30", "YYYY-MM-DD");
 
-			//Days.insert({date: mon.toDate(), amount: 0, dayoff: true});
-			//Days.insert({date: tuesday.toDate(), amount: 0, dayoff: true});
-			//Days.insert({date: wednesday.toDate(), amount: 21.55, dayoff: false});
-			//Days.insert({date: thursday.toDate(), amount: 70.04, dayoff: false});
-			//Days.insert({date: friday.toDate(), amount: 0, dayoff: false});
-			//Days.insert({date: saturday.toDate(), amount: 0, dayoff: false});
-			//Days.insert({date: sun.toDate(), amount: 0, dayoff: true});
+			Days.insert({date: anchor.toDate(), amount: 29.45, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 63.22, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 47.88, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 53.50, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			
-			//Days.insert({date: mon.toDate(), amount: 29.45, dayoff: false});
-			//Days.insert({date: tuesday.toDate(), amount: 63.22, dayoff: false});
-			//Days.insert({date: wednesday.toDate(), amount: 47.88, dayoff: false});
-			//Days.insert({date: thursday.toDate(), amount: 0, dayoff: false});
-			//Days.insert({date: friday.toDate(), amount: 0, dayoff: false});
-			//Days.insert({date: saturday.toDate(), amount: 0, dayoff: true});
-			//Days.insert({date: sun.toDate(), amount: 0, dayoff: true});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 41.35, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 47.46, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 44.88, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 59.82, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 40.80, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			
-//			Days.insert({date: mon.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: tuesday.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: wednesday.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: thursday.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: friday.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: saturday.toDate(), amount: 0, dayoff: true, owner: this.userId});
-//			Days.insert({date: sun.toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 34.41, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 86.42, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 49.26, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 27.50, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 40.04, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 39.94, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 41.52, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 25.92, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 33.12, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 		}
 
 		console.log("[Publish] -> days for " + date);
 		console.log("Today is " + date);
 		console.log("This week's range is " + mon.calendar() + " to " + sun.calendar());
 		console.log("Dayoffset = " + weekday);
-		Days.find(range).forEach(function (day) {
+
+		var currentYear = moment(today).year();
+		var currentMonth = moment(today).month();
+
+		var firstOfMonth = moment(currentYear + "-" + (currentMonth+1) + "-01", "YYYY-MM-DD");
+		var firstOfNextMonth = moment((currentMonth<11?currentYear:currentYear+1) + "-" + (currentMonth<11?currentMonth+1:1) + "-01", "YYYY-MM-DD");
+		console.log("First of this month: " + firstOfMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+		console.log("First of next month: " + firstOfNextMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
+
+		var range = {"date" : {$gte : firstOfMonth.toDate(), $lt : firstOfNextMonth.toDate()}, "owner": this.userId};
+
+		var total = 0;
+		Days.find(range, {sort : {date: 1}}).forEach(function (day) {
+			if (day.amount) total+=day.amount;
 			console.log("Day: " + day.date + " + " + day.amount + " / " + day.dayoff);
 		});
+		console.log("Monthly total: " + total);
 
-		return Days.find(range);
+		return Days.find(range, {sort: {date: 1}});
 	});
 }
