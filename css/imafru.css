@@ -276,6 +276,7 @@ input[type="button"] {
 	padding: 0;
 	top: 0.3em;
 	right: 0.3em;
+	height: 1em;
 	width: 1em;
 	opacity: 0.6;
 }
