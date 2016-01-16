@@ -15,10 +15,10 @@
 	{{stats}}
 	<div class="days">
 		{{#each pastDays}}
-		{{> presentDaySVG}}
+		{{> pastDay}}
 		{{/each}}
 		{{#each presentDays}}
-		{{> presentDaySVG}}
+		{{> presentDay}}
 		{{/each}}
 		{{#each futureDays}}
 		{{> futureDay}}
@@ -28,7 +28,6 @@
 	<div class="week" style="margin-top: 50px;">
 		{{> week}}
 	</div>
-	<div id="svg"></div>
 	{{else}}
 	<div>Display Help</div>
 	{{/if}}
@@ -65,12 +64,6 @@
 		<input class="set" type="button" value="set">
 	</form>
 </div>
-</template>
-
-<template name="presentDaySVG">
-	<div class="day svgcontainer">
-		<svg class="svghook" style="height: 100%"></svg>
-	</div>
 </template>
 
 <template name="presentDay">

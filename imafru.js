@@ -20,24 +20,6 @@ if (Meteor.isClient) {
 		passwordSignupFields: "USERNAME_AND_OPTIONAL_EMAIL"
 	});
 
-	Template.presentDaySVG.onRendered( function () {
-		//console.log("SVGING");
-		var container = this.find(".svgcontainer");
-		var hook = this.find(".svghook");
-
-		var s = Snap(hook);
-		if (!this.data.dayoff) {
-			var amount = this.data.amount;
-			var rec = s.rect(5, container.offsetHeight - this.data.amount - 5, container.offsetWidth - this.data.amount, 40, 3, 3);
-			rec.attr({
-				fill: "#bada55",
-				stroke: "#000",
-				strokeWidth: 1
-			});
-			s.text(30, 30, "$" + this.data.amount);
-		} else s.text(30, 30, "Day off");
-	});
-
 	Template.body.helpers({
 		'stats': function () {
 			//TODO consolidate queries and move to server
@@ -443,7 +425,7 @@ if (Meteor.isServer) {
 		date.setMilliseconds(0);
 		date = moment(date).add(finaloffset, 'minutes').toDate();
 
-		//Days.remove({"owner": this.userId});
+		Days.remove({"owner": this.userId});
 
 		var weekday = moment(date).isoWeekday() - 1;
 		var mon = moment(date).subtract(weekday, 'days');
@@ -459,6 +441,7 @@ if (Meteor.isServer) {
 		if (Days.find(range).count() != 7) {
 			var anchor = new moment("2015-11-30", "YYYY-MM-DD");
 
+			// 11/30/15 ->
 			Days.insert({date: anchor.toDate(), amount: 29.45, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 63.22, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 47.88, dayoff: false, owner: this.userId});
@@ -467,6 +450,7 @@ if (Meteor.isServer) {
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			
+			// 12/07/15 ->
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 41.35, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 47.46, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 44.88, dayoff: false, owner: this.userId});
@@ -475,6 +459,7 @@ if (Meteor.isServer) {
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			
+			// 12/14/15 ->
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 34.41, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 86.42, dayoff: false, owner: this.userId});
@@ -483,6 +468,7 @@ if (Meteor.isServer) {
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 
+			// 12/21/15 ->
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 40.04, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 39.94, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 41.52, dayoff: false, owner: this.userId});
@@ -491,25 +477,57 @@ if (Meteor.isServer) {
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 
+			// 12/28/15 ->
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 36, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 14.58, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 77.58, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 36.75, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 34.50, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+
+			// 01/04/15 ->
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 20.26, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 60.50, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 51.37, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 44.57, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 32.10, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
-			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
+
+			// 01/11/15 ->
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 51.09, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 44.74, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 31.59, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 44.94, dayoff: false, owner: this.userId});
+			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 31.66, dayoff: false, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 			Days.insert({date: anchor.add(1, 'days').toDate(), amount: 0, dayoff: true, owner: this.userId});
 		}
 
 		console.log("[Publish] -> days for " + date);
+		console.log("Dayoffset = " + weekday);
 		console.log("Today is " + date);
 		console.log("This week's range is " + mon.calendar() + " to " + sun.calendar());
-		console.log("Dayoffset = " + weekday);
+
+		var range = {"date" : {$gte : mon.toDate(), $lte : sun.toDate()}, "owner": this.userId};
+		var total = 0;
+		Days.find(range, {sort : {date: 1}}).forEach(function (day) {
+			if (day.amount) total+=day.amount;
+			console.log("Day: " + day.date + " + " + day.amount + " / " + day.dayoff);
+		});
+		console.log("Weekly total: " + total);
+
+
+
 
 		var currentYear = moment(today).year();
 		var currentMonth = moment(today).month();
 
 		var firstOfMonth = moment(currentYear + "-" + (currentMonth+1) + "-01", "YYYY-MM-DD");
-		var firstOfNextMonth = moment((currentMonth<11?currentYear:currentYear+1) + "-" + (currentMonth<11?currentMonth+1:1) + "-01", "YYYY-MM-DD");
+
+		var firstOfNextMonth = new moment(firstOfMonth);
+		firstOfNextMonth.add(1, 'months');
 		console.log("First of this month: " + firstOfMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
 		console.log("First of next month: " + firstOfNextMonth.format("dddd, MMMM Do YYYY, h:mm:ss a"));
 
@@ -518,9 +536,9 @@ if (Meteor.isServer) {
 		var total = 0;
 		Days.find(range, {sort : {date: 1}}).forEach(function (day) {
 			if (day.amount) total+=day.amount;
-			console.log("Day: " + day.date + " + " + day.amount + " / " + day.dayoff);
+			//console.log("Day: " + day.date + " + " + day.amount + " / " + day.dayoff);
 		});
-		console.log("Monthly total: " + total);
+		console.log("This month's total: " + total);
 
 		return Days.find(range, {sort: {date: 1}});
 	});
