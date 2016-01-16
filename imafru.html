@@ -55,7 +55,8 @@
 
 <template name="pastDay">
 <div class="day {{offday}}">
-	<img class="editlock" src="/img/lock-locked.svg" alt="open day to adjust earnings">
+	<svg class="editlock" src="/img/lock-locked.svg" alt="open day to adjust earnings">
+	</svg>
 	<div class="weekday" style="height: {{height "anti"}}px;">{{weekday}}</div>
 	<div class="amount {{display}} {{performance}}" style="height: {{height ""}}px;">{{amount}}</div>
 	<form class="update dontdisplay">
