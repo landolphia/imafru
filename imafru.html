@@ -14,14 +14,22 @@
 	{{#if currentUser}}
 	{{stats}}
 	<div class="days">
+		{{>offDay}}
+		{{>npastDay}}
+		{{>bpastDay}}
+		{{>gpastDay}}
+		{{>npresentDay}}
+		{{>bpresentDay}}
+		{{>gpresentDay}}
+		{{>nfutureDay}}
+		{{>bfutureDay}}
+		{{>gfutureDay}}
+
 		{{#each pastDays}}
-		{{> pastDay}}
 		{{/each}}
 		{{#each presentDays}}
-		{{> presentDay}}
 		{{/each}}
 		{{#each futureDays}}
-		{{> futureDay}}
 		{{/each}}
 	</div>
 
@@ -53,34 +61,92 @@
 </div>
 </template>
 
-<template name="pastDay">
-<div class="day {{offday}}">
-	<img class="editlock" src="/img/lock-unlocked.svg" alt="open day to adjust earnings" />
-	<div class="weekday" style="height: {{height "anti"}}px;">{{weekday}}</div>
-	<div class="amount {{display}} {{performance}}" style="height: {{height ""}}px;">{{amount}}</div>
-	<form class="update dontdisplay">
-		<input class="earning" min=0 value=0>
-		<input class="add" type="button" value="add">
-		<input class="set" type="button" value="set">
-	</form>
-</div>
+
+
+<template name="offDay">
+	<div class="dayContainer">
+		<div class="dayName offday">
+			Day off.
+		</div>
+	</div>
 </template>
 
-<template name="presentDay">
-<div class="day present {{offday}}">
-	<div class="today" style="height: {{height "anti"}}px;">{{weekday}}</div>
-	<div class="amount {{display}}" style="height: {{height}}px;">{{amount}}</div>
-	<form class="update">
-		<input class="earning" min=0 value=0>
-		<input class="add" type="button" value="add">
-		<input class="set" type="button" value="set">
-	</form>
-</div>
+<template name="npresentDay">
+	<div class="dayContainer">
+		<div class="dayName neutral">
+			Present Day.	
+		</div>
+	</div>
 </template>
 
-<template name="futureDay">
-<div class="day {{offday}}">
-	<div class="weekday" style="height: {{height "anti" "future"}}px;">{{weekday}}</div>
-	<div class="amount {{display}} {{difficulty}} future" style="height: {{height "" "future"}}px;">{{needed}}</div>
-</div>
+<template name="gpresentDay">
+	<div class="dayContainer">
+		<div class="dayName good">
+			Present Day.	
+		</div>
+	</div>
+</template>
+
+<template name="bpresentDay">
+	<div class="dayContainer">
+		<div class="dayName bad">
+			Present Day.	
+		</div>
+	</div>
+</template>
+
+<template name="npastDay">
+	<div class="dayContainer">
+		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
+		<div class="dayName neutral">Past day.</div>
+		<div class="earnings">50</div>
+		<div class="bar"></div>
+	</div>
+</template>
+
+<template name="gpastDay">
+	<div class="dayContainer">
+		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
+		<div class="dayName good">Past day.</div>
+		<div class="earnings">50</div>
+		<div class="bonus"></div>
+		<div class="needed"></div>
+	</div>
+</template>
+
+<template name="bpastDay">
+	<div class="dayContainer">
+		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
+		<div class="dayName bad">Past day.</div>
+		<div class="earnings">30</div>
+		<div class="missing"></div>
+		<div class="done"></div>
+	</div>
+</template>
+
+<template name="nfutureDay">
+	<div class="dayContainer">
+		<div class="dayName neutral">Future day.</div>
+		<div class="earnings">50</div>
+		<div class="bonus"></div>
+		<div class="needed"></div>
+	</div>
+</template>
+
+<template name="bfutureDay">
+	<div class="dayContainer">
+		<div class="dayName bad">Future day.</div>
+		<div class="earnings">50</div>
+		<div class="bonus"></div>
+		<div class="needed"></div>
+	</div>
+</template>
+
+<template name="gfutureDay">
+	<div class="dayContainer">
+		<div class="dayName good">Future day.</div>
+		<div class="earnings">50</div>
+		<div class="bonus"></div>
+		<div class="needed"></div>
+	</div>
 </template>
