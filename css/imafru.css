@@ -1,5 +1,6 @@
+/*guideline http://paletton.com/#uid=41E140kvqtChzEboawkySmAHJfY*/
 html{
-	background-color: #FFA349;
+	background-color: #FFF273;
 }
 
 body{
@@ -8,46 +9,118 @@ body{
 	height: 70%;
 	left: 10%;
 	width: 80%;
-	background-color: #FFC649;
-	border: solid 8px #0394B6;
+	background-color: #FFF273;
+	border: solid 8px #087193;
 	border-radius: 35px;
 	padding-top: 50px;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-bottom: 20px;
 	min-height: 400px;
 
-	box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
-	-o-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
-	-moz-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
-	-webkit-box-shadow: 0px 0px 40px 17px rgba(0,0,0,0.5);
+	box-shadow: 0px 0px 20px 7px rgba(88, 162, 187, 0.5);
+	-o-box-shadow: 0px 0px 20px 7px rgba(88, 162, 187, 0.5);
+	-moz-box-shadow: 0px 0px 20px 7px rgba(88, 162, 187, 0.5);
+	-webkit-box-shadow: 0px 0px 20px 7px rgba(88, 162, 187, 0.5);
 }
 
-.dayContainer {
-	position: relative;
-	min-width: 4em;
-	width: 7.5%;
-	max-height: 220px;
-	min-height: 220px;
-	height: 220px;
-	margin: auto;
-	padding: 0;
-	overflow: hidden;
-	border-radius: 1em 1em 0.3em 0.3em;
+@media only screen and (max-width: 480px) {
+		.days {
+			display: -webkit-flex;
+			display: flex;
+			-webkit-flex-direction: column;
+			flex-direction: column;
+		}
 
-	box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-	-o-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-	-moz-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-	-webkit-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+		.dayContainer {
+			position: relative;
+			-min-width: 4em;
+			width: 75%;
+			max-height: 40px;
+			min-height: 40px;
+			height: 220px;
+			margin: auto;
+			padding: 0;
+			overflow: hidden;
+
+			border-radius: 1em 1em 0.3em 0.3em;
+			box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+			-o-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+			-moz-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+			-webkit-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+
+			display: -webkit-flex;
+			display: flex;
+			-webkit-flex-direction: row;
+			flex-direction: row;
+		}
+
+		.dayName {
+			width: 2em;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+			line-height: 1.4em;
+			font-weight: bold;
+			text-align: left;
+			background-color: rgba(220, 220, 220, 0.2);
+			transition: background-color 0.5s ease;
+		}
+	}
+
+@media only screen and (min-width: 480px) {
+	.days {
+		margin-top: 3em;
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		align-items: baseline;
+		-webkit-align-items: baseline;
+	}
+
+	.dayContainer {
+		position: relative;
+		-min-width: 4em;
+		width: 7.5%;
+		margin: auto;
+		padding: 0;
+		overflow: hidden;
+
+		border-radius: 1em 1em 0.3em 0.3em;
+		box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+		-o-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+		-moz-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+		-webkit-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
+
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: column;
+		flex-direction: column;
+	}
+
+	.dayName {
+		display: block;
+		width: 100%;
+		height: 2em;
+		padding: 0;
+		margin: 0;
+		line-height: 2em;
+		font-weight: bold;
+		text-align: left;
+		background-color: rgba(220, 220, 220, 0.2);
+		transition: background-color 0.5s ease;
+	}
 }
 
-.dayName {
-	position: absolute;
-	width: 100%;
-	height: 20px;
-	padding: 0;
-	margin: 0;
-	line-height: 1.4em;
-	font-weight: bold;
-	text-align: center;
-	background-color: rgba(220, 220, 220, 0.2);
+
+
+.dayName:hover {
+	background-color: rgba(255, 255, 255, 0.9);
+}
+
+.earnings:hover {
+	background-color: rgba(255, 242, 115, 0.9);
 }
 
 .offday {
@@ -63,6 +136,8 @@ body{
 	right: 0.3em;
 	height: 1em;
 	width: 1em;
+	height: 20px;
+	width: 20px;
 	opacity: 1.0;
 }
 
@@ -71,12 +146,49 @@ body{
 	font-weight: bold;
 }
 
-.bad {
-	color: rgba(210, 20, 20, 1.0);
-	font-weight: bold;
+.almost {
+	color: #CC2288;
+	background-color: #FF88CC;
 }
 
 .neutral {
 	color: rgba(50, 50, 250, 1.0);
 	font-weight: bold;
+}
+
+.earnings {
+	background-color: rgba(223, 4, 39, 0.2);
+	color: #DF0427;
+
+	text-align: center;
+	font-size: 600;
+	font-weight: bold;
+
+	height: 2em;
+	line-height: 2em;
+	display: block;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+
+	transition: background-color 0.5s ease;
+}
+
+.done {
+	background-color: red;
+	min-height: 160px;
+}
+
+.togoal {
+	flex-grow: 1;
+	min-height: 30px;
+	background-color: #00FF00;
+}
+
+.goal {
+	height: 2em;
+	line-height: 2em;
+	text-align: right;
+	background-color: #0000FF;
+	color: #FF00FF;
 }

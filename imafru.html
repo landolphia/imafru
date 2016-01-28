@@ -9,17 +9,16 @@
 
 <body>
 
-	{{> loginButtons}}
+	<button class="loginButton"> Login! </button>
 
 	{{#if currentUser}}
 	{{stats}}
 	<div class="days">
 		{{>offDay}}
 		{{>npastDay}}
-		{{>bpastDay}}
 		{{>gpastDay}}
 		{{>npresentDay}}
-		{{>bpresentDay}}
+		{{>almostpresentDay}}
 		{{>gpresentDay}}
 		{{>nfutureDay}}
 		{{>bfutureDay}}
@@ -56,6 +55,7 @@
 		<span>{{rightvalue}}</span>
 	</div>
 </div>
+
 <div class="projection">
 	<p>Projection: ${{projection}}</p>
 </div>
@@ -87,46 +87,40 @@
 	</div>
 </template>
 
-<template name="bpresentDay">
+<template name="almostpresentDay">
 	<div class="dayContainer">
-		<div class="dayName bad">
+		<div class="dayName almost">
 			Present Day.	
 		</div>
 	</div>
 </template>
 
 <template name="npastDay">
-	<div class="dayContainer">
-		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
-		<div class="dayName neutral">Past day.</div>
-		<div class="earnings">50</div>
-		<div class="bar"></div>
-	</div>
+	{{!XXX ARCHETYPE XXX}}
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer">
+			<div class="earnings">40</div>
+			<div class="dayName neutral">Monday</div>
+			<div class="done">40</div>
+			<div class="togoal">10</div>
+			<div class="goal">50</div>
+		</div>
 </template>
 
 <template name="gpastDay">
 	<div class="dayContainer">
-		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
-		<div class="dayName good">Past day.</div>
+		<img class="lock" src="/img/locked.svg" alt="Edit earnings." />
 		<div class="earnings">50</div>
-		<div class="bonus"></div>
+		<div class="dayName good">Tuesday</div>
 		<div class="needed"></div>
-	</div>
-</template>
-
-<template name="bpastDay">
-	<div class="dayContainer">
-		<img class="lock" src="/img/lock-unlocked.svg" alt="Edit earnings." />
-		<div class="dayName bad">Past day.</div>
-		<div class="earnings">30</div>
-		<div class="missing"></div>
-		<div class="done"></div>
+		<div class="bonus"></div>
 	</div>
 </template>
 
 <template name="nfutureDay">
 	<div class="dayContainer">
-		<div class="dayName neutral">Future day.</div>
+		<img class="lock" src="img/new.jpg" alt="Edit earnings." />
+		<div class="dayName neutral">Wednesday</div>
 		<div class="earnings">50</div>
 		<div class="bonus"></div>
 		<div class="needed"></div>

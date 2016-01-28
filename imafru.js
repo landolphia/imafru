@@ -16,6 +16,53 @@ if (Meteor.isClient) {
 	Meteor.subscribe("days", today.getTimezoneOffset());
 	Meteor.subscribe("userData");
 
+	//Reusable functions, FIXME
+	var toggleDayOff = function (e) {
+		e.preventDefault();
+		console.log("lkasj");
+		Meteor.call("toggleDayOff", this._id, function (err, data) {
+			if (err) console.log("error: [toggleDayOff] -> " + err);
+			else console.log("toggleDayOff success");
+		});
+	};
+	var toggleLock = function (e) {
+		e.preventDefault();
+		var target = e.target;
+		var container = target.parentNode;
+		var form  = container.getElementsByClassName('update')[0];
+		form.classList.toggle('dontdisplay');
+
+		var icon = e.target.src.toString().search("lock-unlocked");
+		if (icon == -1) e.target.src = e.target.src.replace("lock-locked", "lock-unlocked");
+		else e.target.src = e.target.src.replace("lock-unlocked", "lock-locked");
+	};
+
+	Template.offDay.events({
+		'click .dayName': function (e) { toggleDayOff(e);},
+	});
+
+	Template.npastDay.events({
+		'click .dayName': function (e) { toggleDayOff(e);},
+	});
+
+	Template.npresentDay.events({
+		'click .dayName': function (e) { toggleDayOff(e);},
+	});
+
+	Template.nfutureDay.events({
+		'click .dayName': function (e) { toggleDayOff(e);},
+	});
+
+	//XXX below hasn't passed approval XXX
+
+	Template.registerHelper('needed', function () {
+		var result = 0;
+		var week = Session.get("week");
+		if (week.opendaysLeft >= 0) result = week.needed / week.opendaysLeft;
+		return result.toFixed(2);
+	});
+
+
 	Accounts.ui.config({
 		passwordSignupFields: "USERNAME_AND_OPTIONAL_EMAIL"
 	});
@@ -133,13 +180,6 @@ if (Meteor.isClient) {
 		}
 	});
 
-	Template.registerHelper('needed', function () {
-		var result = 0;
-		var week = Session.get("week");
-		if (week.opendaysLeft >= 0) result = week.needed / week.opendaysLeft;
-		return result.toFixed(2);
-	});
-
 	Template.registerHelper('height', function (a, future) {
 			var graphHeight = Session.get("graphHeight");
 
@@ -242,121 +282,122 @@ if (Meteor.isClient) {
 		}
 	});
 
-	Template.pastDay.events({
-		'focus .earning': function (e) { e.target.select();},
-		'click .editlock' : function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var form  = container.getElementsByClassName('update')[0];
-			form.classList.toggle('dontdisplay');
 
-			var icon = e.target.src.toString().search("lock-unlocked");
-			if (icon == -1) e.target.src = e.target.src.replace("lock-locked", "lock-unlocked");
-			else e.target.src = e.target.src.replace("lock-unlocked", "lock-locked");
-		},
-		'click .weekday' : function (e) {
-			e.preventDefault();
-			Meteor.call("toggleDayOff", this._id, function (err, data) {
-				if (err) console.log("error: [toggleDayOff] -> " + err);
-				else console.log("toggleDayOff success");
-			});
-		},
-		'click .set': function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+	//Template.pastDay.events({
+	//	'focus .earning': function (e) { e.target.select();},
+	//	'click .editlock' : function (e) {
+	//		e.preventDefault();
+	//		var target = e.target;
+	//		var container = target.parentNode;
+	//		var form  = container.getElementsByClassName('update')[0];
+	//		form.classList.toggle('dontdisplay');
 
-			Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
-				if (err) console.log("error: [editAmount] -> " + err);
-				else console.log("editAmount success");
-			});
-		},
-		'click .add': function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+	//		var icon = e.target.src.toString().search("lock-unlocked");
+	//		if (icon == -1) e.target.src = e.target.src.replace("lock-locked", "lock-unlocked");
+	//		else e.target.src = e.target.src.replace("lock-unlocked", "lock-locked");
+	//	},
+	//	'click .weekday' : function (e) {
+	//		e.preventDefault();
+	//		Meteor.call("toggleDayOff", this._id, function (err, data) {
+	//			if (err) console.log("error: [toggleDayOff] -> " + err);
+	//			else console.log("toggleDayOff success");
+	//		});
+	//	},
+	//	'click .set': function (e) {
+	//		e.preventDefault();
+	//		var target = e.target;
+	//		var container = target.parentNode;
+	//		var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
 
-			Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
-				if (err) console.log("error: [addToAmount] -> " + err);
-				else console.log("addToAmount success");
-			});
-		},
-		'submit .update': function (e) { e.preventDefault();}
-	});
+	//		Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+	//			if (err) console.log("error: [editAmount] -> " + err);
+	//			else console.log("editAmount success");
+	//		});
+	//	},
+	//	'click .add': function (e) {
+	//		e.preventDefault();
+	//		var target = e.target;
+	//		var container = target.parentNode;
+	//		var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
 
-	Template.pastDay.helpers({
-		'performance': function () {
-			var result = "";
-			var average = Session.get("average");
-			if (this.amount > (1.1 * average)) result = "aboveaverage ";
-			if (this.amount < (0.7 * average)) result = "belowaverage";
-			return result;
-		},
-		'display': function () { return (this.amount==0?"dontdisplay":"");} 
-	});
+	//		Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+	//			if (err) console.log("error: [addToAmount] -> " + err);
+	//			else console.log("addToAmount success");
+	//		});
+	//	},
+	//	'submit .update': function (e) { e.preventDefault();}
+	//});
 
-	Template.presentDay.events({
-		'focus .earning': function (e) { e.target.select();},
-		'click .today' : function (e) {
-			e.preventDefault();
-			Meteor.call("toggleDayOff", this._id, function (err, data) {
-				if (err) console.log("error: [toggleDayOff] -> " + err);
-				else console.log("toggleDayOff success");
-			});
-		},
-		'click .set': function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+	//Template.pastDay.helpers({
+	//	'performance': function () {
+	//		var result = "";
+	//		var average = Session.get("average");
+	//		if (this.amount > (1.1 * average)) result = "aboveaverage ";
+	//		if (this.amount < (0.7 * average)) result = "belowaverage";
+	//		return result;
+	//	},
+	//	'display': function () { return (this.amount==0?"dontdisplay":"");} 
+	//});
 
-			Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
-				if (err) console.log("error: [editAmount] -> " + err);
-				else console.log("editAmount success");
-			});
-		},
-		'click .add': function (e) {
-			e.preventDefault();
-			var target = e.target;
-			var container = target.parentNode;
-			var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
+	//Template.presentDay.events({
+	//	'focus .earning': function (e) { e.target.select();},
+	//	'click .today' : function (e) {
+	//		e.preventDefault();
+	//		Meteor.call("toggleDayOff", this._id, function (err, data) {
+	//			if (err) console.log("error: [toggleDayOff] -> " + err);
+	//			else console.log("toggleDayOff success");
+	//		});
+	//	},
+	//	'click .set': function (e) {
+	//		e.preventDefault();
+	//		var target = e.target;
+	//		var container = target.parentNode;
+	//		var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
 
-			Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
-				if (err) console.log("error: [addToAmount] -> " + err);
-				else console.log("addToAmount success");
-			});
-		},
-		'submit .update': function (e) { e.preventDefault();}
-	});	
+	//		Meteor.call("editAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+	//			if (err) console.log("error: [editAmount] -> " + err);
+	//			else console.log("editAmount success");
+	//		});
+	//	},
+	//	'click .add': function (e) {
+	//		e.preventDefault();
+	//		var target = e.target;
+	//		var container = target.parentNode;
+	//		var amount = parseFloat(container.getElementsByClassName('earning')[0].value);
 
-	Template.presentDay.helpers({
-		'display': function () { return (this.amount==0 || this.dayoff==true?"dontdisplay":"");} 
-	});
+	//		Meteor.call("addToAmount", this._id, parseFloat(amount).toFixed(2), function (err, data) {
+	//			if (err) console.log("error: [addToAmount] -> " + err);
+	//			else console.log("addToAmount success");
+	//		});
+	//	},
+	//	'submit .update': function (e) { e.preventDefault();}
+	//});	
 
-	Template.futureDay.events({
-		'click .weekday' : function (e) {
-			e.preventDefault();
-			Meteor.call("toggleDayOff", this._id, function (err, data) {
-				if (err) console.log("error: [toggleDayOff] -> " + err);
-				else console.log("toggleDayOff success");
-			});
-		}
-	});	
+	//Template.presentDay.helpers({
+	//	'display': function () { return (this.amount==0 || this.dayoff==true?"dontdisplay":"");} 
+	//});
 
-	Template.futureDay.helpers({
-		'difficulty': function () {
-			var result = "";
-			var week = Session.get("week");
-			if (typeof week == "undefined") return;
-			if (week.currentAverage> (1.1 * week.averageToGoal)) result = "easy";
-			if (week.currentAverage < (0.9 * week.averageToGoal)) result = "hard";
-			return result;
-		},
-		'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
-	});
+	//Template.futureDay.events({
+	//	'click .weekday' : function (e) {
+	//		e.preventDefault();
+	//		Meteor.call("toggleDayOff", this._id, function (err, data) {
+	//			if (err) console.log("error: [toggleDayOff] -> " + err);
+	//			else console.log("toggleDayOff success");
+	//		});
+	//	}
+	//});	
+
+	//Template.futureDay.helpers({
+	//	'difficulty': function () {
+	//		var result = "";
+	//		var week = Session.get("week");
+	//		if (typeof week == "undefined") return;
+	//		if (week.currentAverage> (1.1 * week.averageToGoal)) result = "easy";
+	//		if (week.currentAverage < (0.9 * week.averageToGoal)) result = "hard";
+	//		return result;
+	//	},
+	//	'display': function () { return (this.dayoff==true?"dontdisplay":"");} 
+	//});
 }
 
 if (Meteor.isServer) {
