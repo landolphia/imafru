@@ -64,83 +64,105 @@
 
 
 <template name="offDay">
-	<div class="dayContainer">
+	<div class="dayContainer past">
 		<div class="dayName offday">
-			Day off.
+			Sunday
 		</div>
 	</div>
 </template>
 
 <template name="npresentDay">
-	<div class="dayContainer">
-		<div class="dayName neutral">
-			Present Day.	
+	{{!XXX ARCHETYPE XXX}}
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer present neutral">
+			<div class="earnings">50</div>
+			<div class="dayName good">Wednesday</div>
+			<div class="present done neutral">30</div>
+			<div class="separator"></div>
+			<div class="present goal neutral">20</div>
+			<div class="separator good"></div>
 		</div>
-	</div>
 </template>
 
 <template name="gpresentDay">
-	<div class="dayContainer">
-		<div class="dayName good">
-			Present Day.	
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer present good">
+			<div class="earnings">50</div>
+			<div class="dayName good">Friday</div>
+			<div class="present goal good">40</div>
+			<div class="separator"></div>
+			<div class="present done good">10</div>
+			<div class="separator good"></div>
 		</div>
-	</div>
 </template>
 
 <template name="almostpresentDay">
-	<div class="dayContainer">
-		<div class="dayName almost">
-			Present Day.	
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer present almost">
+			<div class="earnings">50</div>
+			<div class="dayName good">Thursday</div>
+			<div class="present done almost">45</div>
+			<div class="present goal almost">0</div>
+			<div class="separator good"></div>
 		</div>
-	</div>
 </template>
 
 <template name="npastDay">
-	{{!XXX ARCHETYPE XXX}}
 		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
 		<div class="dayContainer">
 			<div class="earnings">40</div>
 			<div class="dayName neutral">Monday</div>
-			<div class="done">40</div>
-			<div class="togoal">10</div>
-			<div class="goal">50</div>
+			<div class="done neutral">40</div>
+			<div class="separator"></div>
+			<div class="goal neutral">10</div>
+			<div class="separator neutral"></div>
 		</div>
 </template>
 
 <template name="gpastDay">
-	<div class="dayContainer">
-		<img class="lock" src="/img/locked.svg" alt="Edit earnings." />
-		<div class="earnings">50</div>
-		<div class="dayName good">Tuesday</div>
-		<div class="needed"></div>
-		<div class="bonus"></div>
-	</div>
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer">
+			<div class="earnings">50</div>
+			<div class="dayName good">Tuesday</div>
+			<div class="goal good">40</div>
+			<div class="separator"></div>
+			<div class="done good">10</div>
+			<div class="separator good"></div>
+		</div>
 </template>
 
 <template name="nfutureDay">
-	<div class="dayContainer">
-		<img class="lock" src="img/new.jpg" alt="Edit earnings." />
-		<div class="dayName neutral">Wednesday</div>
-		<div class="earnings">50</div>
-		<div class="bonus"></div>
-		<div class="needed"></div>
-	</div>
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer">
+			<div class="earnings">50</div>
+			<div class="dayName good">Saturday</div>
+			<div class="goal good" alt="onhovertooltip">40</div>
+			<div class="separator"></div>
+			<div class="done good">10</div>
+			<div class="separator good"></div>
+		</div>
 </template>
 
 <template name="bfutureDay">
-	<div class="dayContainer">
-		<div class="dayName bad">Future day.</div>
-		<div class="earnings">50</div>
-		<div class="bonus"></div>
-		<div class="needed"></div>
-	</div>
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer">
+			<div class="earnings">50</div>
+			<div class="dayName good">Sunday</div>
+			<div class="goal good" alt="onhovertooltip">40</div>
+			<div class="separator"></div>
+			<div class="done good">10</div>
+			<div class="separator good"></div>
+		</div>
 </template>
 
 <template name="gfutureDay">
-	<div class="dayContainer">
-		<div class="dayName good">Future day.</div>
-		<div class="earnings">50</div>
-		<div class="bonus"></div>
-		<div class="needed"></div>
-	</div>
+		<img class="lock" src="/img/unlocked.svg" alt="Edit earnings." />
+		<div class="dayContainer future">
+			<div class="earnings">50</div>
+			<div class="dayName good">Monday</div>
+			<div class="goal good" alt="onhovertooltip">40</div>
+			<div class="separator"></div>
+			<div class="done good">10</div>
+			<div class="separator good"></div>
+		</div>
 </template>

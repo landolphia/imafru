@@ -44,10 +44,6 @@ body{
 			overflow: hidden;
 
 			border-radius: 1em 1em 0.3em 0.3em;
-			box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-			-o-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-			-moz-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-			-webkit-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
 
 			display: -webkit-flex;
 			display: flex;
@@ -63,7 +59,6 @@ body{
 			line-height: 1.4em;
 			font-weight: bold;
 			text-align: left;
-			background-color: rgba(220, 220, 220, 0.2);
 			transition: background-color 0.5s ease;
 		}
 	}
@@ -88,15 +83,13 @@ body{
 		overflow: hidden;
 
 		border-radius: 1em 1em 0.3em 0.3em;
-		box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-		-o-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-		-moz-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
-		-webkit-box-shadow: 0px 0px 7px 3px rgba(255, 255, 255, 0.3);
 
 		display: -webkit-flex;
 		display: flex;
 		-webkit-flex-direction: column;
 		flex-direction: column;
+
+		height: 20em;
 	}
 
 	.dayName {
@@ -108,16 +101,11 @@ body{
 		line-height: 2em;
 		font-weight: bold;
 		text-align: left;
-		background-color: rgba(220, 220, 220, 0.2);
 		transition: background-color 0.5s ease;
 	}
 }
 
 
-
-.dayName:hover {
-	background-color: rgba(255, 255, 255, 0.9);
-}
 
 .earnings:hover {
 	background-color: rgba(255, 242, 115, 0.9);
@@ -141,25 +129,7 @@ body{
 	opacity: 1.0;
 }
 
-.good {
-	color: rgba(30, 220, 50, 1.0);
-	font-weight: bold;
-}
-
-.almost {
-	color: #CC2288;
-	background-color: #FF88CC;
-}
-
-.neutral {
-	color: rgba(50, 50, 250, 1.0);
-	font-weight: bold;
-}
-
 .earnings {
-	background-color: rgba(223, 4, 39, 0.2);
-	color: #DF0427;
-
 	text-align: center;
 	font-size: 600;
 	font-weight: bold;
@@ -174,21 +144,114 @@ body{
 	transition: background-color 0.5s ease;
 }
 
-.done {
-	background-color: red;
-	min-height: 160px;
-}
-
-.togoal {
-	flex-grow: 1;
-	min-height: 30px;
-	background-color: #00FF00;
-}
-
 .goal {
-	height: 2em;
 	line-height: 2em;
 	text-align: right;
-	background-color: #0000FF;
-	color: #FF00FF;
+}
+
+.dayName.neutral {
+	background-color: rgba(0, 0, 0, 0.1);
+	color: #FFF273;
+}
+
+.dayName.good{
+	background-color: #7F7400;
+	color: #FFEE3E;
+}
+
+.dayName:hover {
+	background-color: rgba(127, 116, 0, 0.5);
+}
+
+
+.done.neutral {
+	flex-grow: 0.3;
+	background-color: #045570;
+}
+
+.done.good {
+	flex-grow: 0.7;
+	background-color: #58A2BB;
+}
+
+.goal.neutral {
+	flex-grow: 0.3;
+	background-color: #7F7400;
+	color: #ECD704;
+}
+
+.goal.good{
+	flex-grow: 0.7;
+	background-color: #087193;
+	color: #00000;
+}
+
+.separator {
+	width: 100%;
+	height: 0.66em;
+	background-color: rgba(127, 116, 0, 0.8);
+}
+
+.separator.neutral {
+	background-color: #087193;
+}
+
+.separator.good {
+	background-color: #2C83A0;
+}
+
+.past, .future {
+	opacity: 0.3;
+	transform: scaleY(0.8);
+}
+
+.dayContainer.present.neutral {
+	box-shadow: 0px 0px 7px 3px #FF0000;
+	-o-box-shadow: 0px 0px 7px 3px #4444FF;
+	-moz-box-shadow: 0px 0px 7px 3px #4444FF;
+	-webkit-box-shadow: 0px 0px 7px 3px #4444FF;
+}
+
+.dayContainer.present.almost {
+	box-shadow: 0px 0px 7px 3px #FFA500;
+	-o-box-shadow: 0px 0px 7px 3px #FFA500;
+	-moz-box-shadow: 0px 0px 7px 3px #FFA500;
+	-webkit-box-shadow: 0px 0px 7px 3px #FFA500;
+}
+
+.dayContainer.present.good {
+	box-shadow: 0px 0px 7px 3px #FF0000;
+	-o-box-shadow: 0px 0px 7px 3px #00FF00;
+	-moz-box-shadow: 0px 0px 7px 3px #00FF00;
+	-webkit-box-shadow: 0px 0px 7px 3px #00FF00;
+}
+
+.present.good.goal {
+	flex-grow: 0.75;
+	background-color: #FFEE3E;
+}
+
+.present.good.done {
+	flex-grow: 0.25;
+	background-color: #ECD704;
+}
+
+.present.neutral.goal {
+	flex-grow: 0.55;
+	background-color: #FFEE3E;
+}
+
+.present.neutral.done {
+	flex-grow: 0.45;
+	background-color: #ECD704;
+}
+
+.present.almost.goal {
+	flex-grow: 0.1;
+	background-color: #FFA500;
+}
+
+.present.almost.done {
+	flex-grow: 0.9;
+	background-color: #ECD704;
 }
