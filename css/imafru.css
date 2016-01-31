@@ -88,8 +88,9 @@ body{
 		display: flex;
 		-webkit-flex-direction: column;
 		flex-direction: column;
-
-		height: 20em;
+		justify-content: center;
+		align-items: stretch;
+		align-content: flex-start;
 	}
 
 	.dayName {
@@ -227,31 +228,86 @@ body{
 }
 
 .present.good.goal {
-	flex-grow: 0.75;
-	background-color: #FFEE3E;
+	height: 8.0em;
+	background-color: rgba(140, 98, 197, 1.0);
+	text-align: center;
+}
+
+.present.good.goal> span {
+	display: inline-block;
+	line-height: 8.0em;
+
+	font-weight: bold;
+	font-size: 800;
 }
 
 .present.good.done {
-	flex-grow: 0.25;
-	background-color: #ECD704;
+	height: 2.0em;
+	background-color: rgba(78, 16, 160, 1.0);
+	text-align: center;
+}
+
+.present.good.done > span {
+	display: inline-block;
+	line-height: 2.0em;
+
+	font-weight: bold;
+	font-size: 800;
 }
 
 .present.neutral.goal {
-	flex-grow: 0.55;
-	background-color: #FFEE3E;
+	height: 4.0em;
+	background-color: rgba(2, 60, 79, 1.0);
+	text-align: center;
 }
 
+.present.neutral.goal> span {
+	display: inline-block;
+	line-height: 4.0em;
+
+	font-weight: bold;
+	font-size: 800;
+}
+
+
 .present.neutral.done {
-	flex-grow: 0.45;
-	background-color: #ECD704;
+	height: 6.0em;
+	background-color: rgba(88, 162, 187, 1.0);
+	text-align: center;
+}
+
+.present.neutral.done > span {
+	display: inline-block;
+	line-height: 6.0em;
+
+	font-weight: bold;
+	font-size: 800;
 }
 
 .present.almost.goal {
-	flex-grow: 0.1;
-	background-color: #FFA500;
+	height: 1.0em;
+	min-height: 1em;
+	background-color: rgba(223, 4, 39, 1.0);
+	text-align: center;
+}
+
+.present.almost.goal> span {
+	display: inline-block;
+	line-height: 1.0em;
+
+	font-size: 300;
 }
 
 .present.almost.done {
-	flex-grow: 0.9;
-	background-color: #ECD704;
+	height: 9.0em;
+	background-color: rgba(255, 153, 0, 0.3);
+	text-align: center;
+}
+
+.present.almost.done > span {
+	display: inline-block;
+	line-height: 9.0em;
+
+	font-weight: bold;
+	font-size: 800;
 }
